@@ -1,6 +1,17 @@
 import random
 import time
-from win10toast import ToastNotifier
+while True:
+    try:
+        from win10toast import ToastNotifier
+        break
+    except ImportError as e: #: trying import
+        try:
+            import os
+            os.system('pip install pipreqs && pipreqs --encoding utf-8 --force && pip install -r requirements.txt')
+        except:
+            print('Import Error: ', e)
+            exit()
+        
 
 
 class listNotifier():
