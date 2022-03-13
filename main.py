@@ -1,5 +1,7 @@
+import pathlib
 import random
 import time
+import json
 while True:
     try:
         from win10toast import ToastNotifier
@@ -9,18 +11,16 @@ while True:
             import os
             os.system('pip install pipreqs && pipreqs --encoding utf-8 --force && pip install -r requirements.txt')
         except:
-            print('Import Error: ', e)
+            print('Import Error:', e)
             exit()
         
-
-
 class listNotifier():
     notifier = ToastNotifier() # create an object to ToastNotifier class
     notifierDuration = 7 # 7 sec
     newChoiceTime = 60*5 # 5 min
+    separator = ':'
 
-    def __init__(self, file_name, sep):
-        self.separator = sep
+    def __init__(self, file_name):
         self.fileName = file_name
 
     """ 
@@ -28,9 +28,22 @@ class listNotifier():
         pass
     """
 
-    def readFile(self):
-        with open(self.fileName, encoding='utf8') as f:
-            return f.readlines()
+    def fileExtension(self):
+        return pathlib.Path(self.fileName).suffix
+        
+    def readFile(self, extension):
+        contents = []
+        if extension == '.txt':
+            with open(self.fileName, 'r') as f:
+                contents = f.readlines()
+        elif extension == '.json':
+            jsonData = json.load(open(self.fileName))
+            for title, description in jsonData.items():
+                contents.append(f'{title}{self.separator}{description}')
+        elif extension == '.csv':
+            pass # Not yet implemented
+
+        return contents
 
     def randomChoice(self, contents):
         return random.choice(contents)
@@ -50,8 +63,9 @@ class listNotifier():
         print(f'{title}: {description}')
 
     def runner(self):
+        extension = self.fileExtension()
+        contents = self.readFile(extension)
         while True:
-            contents = self.readFile() # Reading file
             content = self.randomChoice(contents)
             seperatorIndex = self.findSeperator(content)
             title, description = self.editContent(content, seperatorIndex)
@@ -60,6 +74,6 @@ class listNotifier():
             time.sleep(self.newChoiceTime)
 
 if __name__ == '__main__':
-    x = listNotifier('list.txt', ':') # Filename, 'seperator'
+    x = listNotifier('list.json') # Filename
     x.runner()
 
