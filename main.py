@@ -47,10 +47,6 @@ class listNotifier():
         if contents == []: # if list/file is empty
             print('File is empty!')
             exit() #: exit program
-
-        for content in contents:
-            if content[0] == self.passChar: # if first char is #
-                contents.remove(content) #: remove comment
         return contents
 
     def randomChoice(self, contents):
@@ -70,10 +66,16 @@ class listNotifier():
     def terminalPrinter(self, title, description):
         print(f'{title}: {description}') #: print on terminal
 
+    def passContent(self, contents): #: remove content with #
+        for content in contents: #: iterate contents
+            if content[0] == self.passChar: # if first char is #
+                contents.remove(content) #: remove content
+        return contents #: return contents
+
     def runner(self):
         extension = self.fileExtension() #: get file extension
         contents = self.readFile(extension) #: read file
-        
+        contents = self.passContent(contents) #: remove content with #
         while True: #: infinite loop
             content = self.randomChoice(contents) #: random choice from list
             seperatorIndex = self.findSeperator(content) #: find seperator index
