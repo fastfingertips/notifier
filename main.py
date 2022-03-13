@@ -1,4 +1,3 @@
-from encodings import utf_8
 import pathlib
 import random
 import time
@@ -64,7 +63,7 @@ class listNotifier():
         self.notifier.show_toast(title, description, duration=self.notifierDuration) #: show toast
 
     def terminalPrinter(self, title, description):
-        print(f'{title}: {description}') #: print on terminal
+        print(f'{time.strftime("%X")} | {title}: {description}') #: print on terminal
 
     def passContent(self, contents): #: remove content with #
         for content in contents: #: iterate contents
