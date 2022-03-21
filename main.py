@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import time
 import random
@@ -19,7 +20,6 @@ while True:
         
 class listNotifier():
     notifier = ToastNotifier() # create an object to ToastNotifier class
-
     notifierDuration = 7 # 7 sec
     newChoiceTime = 60*5 # + notifierDuration
     separator = ':' 
@@ -44,8 +44,12 @@ class listNotifier():
                 contents.append(f'{title}{self.separator}{description}') # append to contents
         else: # txt, csv or other file types
         # elif extension in ['.txt','.csv']:   
-            with open(self.fileName, 'r', encoding='utf_8') as f: #: txt file
-                contents = f.readlines()
+            try:
+                with open(self.fileName, 'r', encoding='utf_8') as f: #: txt file
+                    contents = f.readlines()
+            except FileNotFoundError as e:
+                print(e)
+                exit()
 
         if contents == []: # if list/file is empty
             print('File is empty!')
@@ -95,8 +99,11 @@ class listNotifier():
             hf.write(f'{datetime.now().strftime("%d/%m/%Y %H:%M:%S")} {title}:{description}\n')
             hf.close() # close file
 
-            
 if __name__ == '__main__': #: main function
-    x = listNotifier('list.json') #: create object
+    try:
+        listFileName = sys.argv[1] # list file name
+    except:
+        listFileName = input('Enter list filename: ')
+    x = listNotifier(listFileName) #: create object
     x.runner() #: run program
 
