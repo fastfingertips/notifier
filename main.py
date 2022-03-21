@@ -1,7 +1,10 @@
-import pathlib
-import random
-import time
+import os
 import json
+import time
+import random
+import pathlib
+from datetime import datetime
+
 while True: 
     try: 
         from win10toast import ToastNotifier # pip install win10toast
@@ -16,8 +19,9 @@ while True:
         
 class listNotifier():
     notifier = ToastNotifier() # create an object to ToastNotifier class
+
     notifierDuration = 7 # 7 sec
-    newChoiceTime = 60*5 # 5 min
+    newChoiceTime = 60*5 # + notifierDuration
     separator = ':' 
     passChar = '#'
 
@@ -78,11 +82,20 @@ class listNotifier():
         while True: #: infinite loop
             content = self.randomChoice(contents) #: random choice from list
             seperatorIndex = self.findSeperator(content) #: find seperator index
-            title, description = self.editContent(content, seperatorIndex)
+            title, description = self.editContent(content, seperatorIndex) #: edit content
             self.terminalPrinter(title, description) #: print on terminal
+            self.writeHistory(title, description) #: write history
             self.runNotifier(title, description) #: show toast
             time.sleep(self.newChoiceTime) #: wait for new choice
+    
+    def writeHistory(self, title, description): # write history
+        historyFileName = 'history.txt' #: history file name
+        mode = 'a' if os.path.exists(historyFileName) else 'w'
+        with open(historyFileName, mode) as hf: # append mode
+            hf.write(f'{datetime.now().strftime("%d/%m/%Y %H:%M:%S")} {title}:{description}\n')
+            hf.close() # close file
 
+            
 if __name__ == '__main__': #: main function
     x = listNotifier('list.json') #: create object
     x.runner() #: run program
