@@ -85,7 +85,6 @@ class listNotifier():
         extension = self.fileExtension() #: get file extension
         contents = self.readFile(extension) #: read file
         contents = self.passContent(contents) #: remove content with #
-
         while True: #: infinite loop
             content = self.randomChoice(contents) #: random choice from list
             seperatorIndex = self.findSeperator(content) #: find seperator index
@@ -93,23 +92,24 @@ class listNotifier():
             self.terminalPrinter(title, description) #: print on terminal
             self.writeHistory(title, description) #: write history
             self.runNotifier(title, description) #: show toast
-
             time.sleep(self.newChoiceTime) #: wait for new choice
     
     def writeHistory(self, title, description): 
         mode = 'a' if os.path.exists(self.historyFileName) else 'w' #: check if file exists
         with open(self.historyFileName, mode) as hf: # append mode
-            lastContentDate = self.getLastContent(self.historyFileName, 10) #: get last content date
-            if lastContentDate != datetime.now().strftime("%d/%m/%Y"):
-                hf.write('\n') #: write history
+            lastContent = self.getLastContent(self.historyFileName, 10) #: get last content date
+            if lastContent != None and lastContent != datetime.now().strftime("%d/%m/%Y"):
+                hf.write('---------- -------- | -------------------') #: write history
             hf.write(f'{datetime.now().strftime("%d/%m/%Y %H:%M:%S")} | {title}: {description}\n') #: write history
             hf.close() # close file
 
     def getLastContent(self, fileName, end=-1):
         with open(fileName, 'r') as hf:
-            content = hf.readlines()[-1][:end]
-            hf.close()
-        return(content)
+            try:
+                line = hf.readlines()[-1][:end]
+            except:
+                return(None)
+        return(line)
 
 if __name__ == '__main__': #: main function
     try:
