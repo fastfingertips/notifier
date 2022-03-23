@@ -22,8 +22,9 @@ class listNotifier():
     notifier = ToastNotifier() # create an object to ToastNotifier class
     notifierDuration = 7 # 7 sec
     newChoiceTime = 60*5 # + notifierDuration
-    separator = ':' 
-    passChar = '#'
+    historyFileName = 'history.txt' #: history file name
+    separator = ':' #: seperator
+    passChar = '#' #: pass char
 
     def __init__(self, file_name):
         self.fileName = file_name #: get file name
@@ -37,24 +38,25 @@ class listNotifier():
         return pathlib.Path(self.fileName).suffix #: get file extension
         
     def readFile(self, extension):
-        contents = []
-        if extension == '.json': #: json file
-            jsonData = json.load(open(self.fileName, 'r', encoding='utf_8')) # load json file
-            for title, description in jsonData.items(): # iterate json file
-                contents.append(f'{title}{self.separator}{description}') # append to contents
-        else: # txt, csv or other file types
-        # elif extension in ['.txt','.csv']:   
-            try:
+        try:
+            contents = []
+            if extension == '.json': #: json file
+                jsonData = json.load(open(self.fileName, 'r', encoding='utf_8')) # load json file
+                for title, description in jsonData.items(): # iterate json file
+                    contents.append(f'{title}{self.separator}{description}') # append to contents
+            else: # txt, csv or other file types 
+            # elif extension in ['.txt','.csv']:   
                 with open(self.fileName, 'r', encoding='utf_8') as f: #: txt file
                     contents = f.readlines()
-            except FileNotFoundError as e:
-                print(e)
-                exit()
-
-        if contents == []: # if list/file is empty
-            print('File is empty!')
-            exit() #: exit program
-        return contents
+        except FileNotFoundError as e:
+            print(e)
+            exit()
+        finally:
+            if contents == []: # if list/file is empty
+                print('File is empty!')
+                exit() #: exit program
+            else:
+                return contents
 
     def randomChoice(self, contents):
         return random.choice(contents) #: random choice from list
@@ -83,6 +85,7 @@ class listNotifier():
         extension = self.fileExtension() #: get file extension
         contents = self.readFile(extension) #: read file
         contents = self.passContent(contents) #: remove content with #
+
         while True: #: infinite loop
             content = self.randomChoice(contents) #: random choice from list
             seperatorIndex = self.findSeperator(content) #: find seperator index
@@ -90,14 +93,23 @@ class listNotifier():
             self.terminalPrinter(title, description) #: print on terminal
             self.writeHistory(title, description) #: write history
             self.runNotifier(title, description) #: show toast
+
             time.sleep(self.newChoiceTime) #: wait for new choice
     
-    def writeHistory(self, title, description): # write history
-        historyFileName = 'history.txt' #: history file name
-        mode = 'a' if os.path.exists(historyFileName) else 'w'
-        with open(historyFileName, mode) as hf: # append mode
-            hf.write(f'{datetime.now().strftime("%d/%m/%Y %H:%M:%S")} {title}:{description}\n')
+    def writeHistory(self, title, description): 
+        mode = 'a' if os.path.exists(self.historyFileName) else 'w' #: check if file exists
+        with open(self.historyFileName, mode) as hf: # append mode
+            lastContentDate = self.getLastContent(self.historyFileName, 10) #: get last content date
+            if lastContentDate != datetime.now().strftime("%d/%m/%Y"):
+                hf.write('\n') #: write history
+            hf.write(f'{datetime.now().strftime("%d/%m/%Y %H:%M:%S")} | {title}: {description}\n') #: write history
             hf.close() # close file
+
+    def getLastContent(self, fileName, end=-1):
+        with open(fileName, 'r') as hf:
+            content = hf.readlines()[-1][:end]
+            hf.close()
+        return(content)
 
 if __name__ == '__main__': #: main function
     try:
