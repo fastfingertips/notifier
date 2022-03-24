@@ -23,7 +23,7 @@ class listNotifier():
     notifierDuration = 7 # 7 sec
     newChoiceTime = 60*5 # + notifierDuration
     historyFileName = 'history.txt' #: history file name
-    separator = ':' #: seperator
+    sepChar = ':' #: seperator
     passChar = '#' #: pass char
 
     def __init__(self, file_name):
@@ -43,7 +43,7 @@ class listNotifier():
             if extension == '.json': #: json file
                 jsonData = json.load(open(self.fileName, 'r', encoding='utf_8')) # load json file
                 for title, description in jsonData.items(): # iterate json file
-                    contents.append(f'{title}{self.separator}{description}') # append to contents
+                    contents.append(f'{title}{self.sepChar}{description}') # append to contents
             else: # txt, csv or other file types 
             # elif extension in ['.txt','.csv']:   
                 with open(self.fileName, 'r', encoding='utf_8') as f: #: txt file
@@ -62,7 +62,7 @@ class listNotifier():
         return random.choice(contents) #: random choice from list
 
     def findSeperator(self, content):
-        return content.index(self.separator) #: find seperator index
+        return content.index(self.sepChar) #: find seperator index
 
     def editContent(self, content, sepIndex):
         title = content[:sepIndex].strip() #: get title
