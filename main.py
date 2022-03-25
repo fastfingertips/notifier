@@ -25,7 +25,7 @@ class listNotifier():
     historyFileName = 'history.txt' #: history file name
     sepChar = ':' #: seperator
     passChar = '#' #: pass char
-
+    lineChar = '-'
     def __init__(self, file_name):
         self.fileName = file_name #: get file name
 
@@ -99,7 +99,10 @@ class listNotifier():
         with open(self.historyFileName, mode) as hf: # append mode
             lastContent = self.getLastContent(self.historyFileName, 10) #: get last content date
             if lastContent != None and lastContent != datetime.now().strftime("%d/%m/%Y"):
-                hf.write('---------- -------- | -------------------') #: write history
+                newDayMsg = f'{self.lineChar*10} {self.lineChar*8} | {self.lineChar*19}'
+                print(newDayMsg[11:])
+                hf.write(newDayMsg+'\n') #: write history
+
             hf.write(f'{datetime.now().strftime("%d/%m/%Y %H:%M:%S")} | {title}: {description}\n') #: write history
             hf.close() # close file
 
@@ -107,6 +110,8 @@ class listNotifier():
         with open(fileName, 'r') as hf:
             try:
                 line = hf.readlines()[-1][:end]
+                if fileName == self.historyFileName and self.lineChar*end == line:
+                    return(None)
             except:
                 return(None)
         return(line)
