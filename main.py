@@ -6,18 +6,12 @@ import random
 import pathlib
 from datetime import datetime
 
-while True: 
-    try: 
-        from win10toast import ToastNotifier # pip install win10toast
-        break # break out of the while loop
-    except ImportError as e: # if the import fails
-        try: # try to import from the pip package
-            import os 
-            os.system('pip install pipreqs && pipreqs --encoding utf-8 --force && pip install -r requirements.txt') 
-        except: 
-            print('Import Error:', e) #: print error
-            exit() # exit the program
-        
+while True:
+    try: from win10toast import ToastNotifier; break
+    except ImportError as ie: # if the import fails
+        try: os.system('pip install pipreqs && pipreqs --encoding utf-8 --force && pip install -r requirements.txt')
+        except Exception as e: print(F'Import Error: {ie}, Exception: {e}'); exit()
+
 class listNotifier():
     notifier = ToastNotifier() # create an object to ToastNotifier class
     notifierDuration = 7 # 7 sec
@@ -26,17 +20,16 @@ class listNotifier():
     sepChar = ':' #: seperator
     passChar = '#' #: pass char
     lineChar = '-'
-    def __init__(self, file_name):
-        self.fileName = file_name #: get file name
+
+    def __init__(self, file_name): self.fileName = file_name #: get file name
 
     """ 
     def __str__(self): 
         pass
     """
 
-    def fileExtension(self):
-        return pathlib.Path(self.fileName).suffix #: get file extension
-        
+    def fileExtension(self): return pathlib.Path(self.fileName).suffix #: get file extension
+
     def readFile(self, extension):
         try:
             contents = []
@@ -44,19 +37,14 @@ class listNotifier():
                 jsonData = json.load(open(self.fileName, 'r', encoding='utf_8')) # load json file
                 for title, description in jsonData.items(): # iterate json file
                     contents.append(f'{title}{self.sepChar}{description}') # append to contents
-            else: # txt, csv or other file types 
-            # elif extension in ['.txt','.csv']:   
+            elif extension in ['.txt','.csv']:
                 with open(self.fileName, 'r', encoding='utf_8') as f: #: txt file
                     contents = f.readlines()
-        except FileNotFoundError as e:
-            print(e)
-            exit()
+            else: print('File extension not supported'); exit()
+        except FileNotFoundError as e: print(e); exit()
         finally:
-            if contents == []: # if list/file is empty
-                print('File is empty!')
-                exit() #: exit program
-            else:
-                return contents
+            if contents == []: print('File is empty!'); exit() #: if contents is empty
+            else: print(F'File read successfully! ({len(contents)} contents)'); return contents
 
     def randomChoice(self, contents):
         return random.choice(contents) #: random choice from list
@@ -77,8 +65,7 @@ class listNotifier():
 
     def passContent(self, contents): #: remove content with #
         for content in contents: #: iterate contents
-            if content[0] == self.passChar: # if first char is #
-                contents.remove(content) #: remove content
+            if content[0] == self.passChar: contents.remove(content) # remove content with #
         return contents #: return contents
 
     def runner(self):
@@ -93,8 +80,8 @@ class listNotifier():
             self.writeHistory(title, description) #: write history
             self.runNotifier(title, description) #: show toast
             time.sleep(self.newChoiceTime) #: wait for new choice
-    
-    def writeHistory(self, title, description): 
+
+    def writeHistory(self, title, description):
         mode = 'a' if os.path.exists(self.historyFileName) else 'w' #: check if file exists
         with open(self.historyFileName, mode) as hf: # append mode
             lastContent = self.getLastContent(self.historyFileName, 10) #: get last content date
@@ -110,17 +97,13 @@ class listNotifier():
         with open(fileName, 'r') as hf:
             try:
                 line = hf.readlines()[-1][:end]
-                if fileName == self.historyFileName and self.lineChar*end == line:
-                    return(None)
-            except:
-                return(None)
+                if fileName == self.historyFileName and self.lineChar*end == line: return(None)
+            except: return(None)
         return(line)
 
 if __name__ == '__main__': #: main function
-    try:
-        listFileName = sys.argv[1] # list file name
-    except:
-        listFileName = input('Enter list filename: ')
+    try: listFileName = sys.argv[1] # list file name
+    except: listFileName = input('Enter list filename: ')
     x = listNotifier(listFileName) #: create object
     x.runner() #: run program
 
