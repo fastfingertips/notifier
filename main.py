@@ -28,28 +28,38 @@ class listNotifier():
         pass
     """
 
-    def fileExtension(self): return pathlib.Path(self.fileName).suffix #: get file extension
+    def getFileExtension(self) -> str:
+        return pathlib.Path(self.fileName).suffix #: get file extension
 
     def readFile(self, extension):
+        contents = []
         try:
-            contents = []
-            if extension == '.json': #: json file
-                jsonData = json.load(open(self.fileName, 'r', encoding='utf_8')) # load json file
-                for title, description in jsonData.items(): # iterate json file
-                    contents.append(f'{title}{self.sepChar}{description}') # append to contents
-            elif extension in ['.txt','.csv']:
-                with open(self.fileName, 'r', encoding='utf_8') as f: #: txt file
-                    contents = f.readlines()
-            else: print('File extension not supported'); exit()
-        except FileNotFoundError as e: print(e); exit()
-        finally:
-            if contents == []: print('File is empty!'); exit() #: if contents is empty
-            else: print(F'File read successfully! ({len(contents)} contents)'); return contents
+            match extension:
+                case '.json':
+                    jsonData = json.load(open(self.fileName, 'r', encoding='utf_8')) # load json file
+                    for title, description in jsonData.items(): # iterate json file
+                        contents.append(f'{title}{self.sepChar}{description}') # append to contents
+                case '.txt', '.csv':
+                    with open(self.fileName, 'r', encoding='utf_8') as f:
+                        contents = f.readlines()
+                case _: print('File extension not supported')
+
+            if len(contents):
+                print(F'File read successfully! ({len(contents)} contents)')
+                return contents
+            else:
+                print('File is empty!')
+                exit()
+
+        except FileNotFoundError as e: 
+            print(f'FileNotFoundError: {e}')
+            exit()
 
     def randomChoice(self, contents):
         return random.choice(contents) #: random choice from list
 
-    def findSeperator(self, content):
+    def findSeperatorIndex(self, content):
+        print('Returned: ', content.index(self.sepChar))
         return content.index(self.sepChar) #: find seperator index
 
     def editContent(self, content, sepIndex):
@@ -58,6 +68,7 @@ class listNotifier():
         return title, description #: return title and description
 
     def runNotifier(self, title, description): 
+        self.notifier.show_toast(title, description, duration=self.notifierDuration) #: show toast
         self.notifier.show_toast(title, description, duration=self.notifierDuration) #: show toast
 
     def terminalPrinter(self, title, description):
@@ -69,12 +80,12 @@ class listNotifier():
         return contents #: return contents
 
     def runner(self):
-        extension = self.fileExtension() #: get file extension
+        extension = self.getFileExtension() #: get file extension
         contents = self.readFile(extension) #: read file
         contents = self.passContent(contents) #: remove content with #
         while True: #: infinite loop
             content = self.randomChoice(contents) #: random choice from list
-            seperatorIndex = self.findSeperator(content) #: find seperator index
+            seperatorIndex = self.findSeperatorIndex(content) #: find seperator index
             title, description = self.editContent(content, seperatorIndex) #: edit content
             self.terminalPrinter(title, description) #: print on terminal
             self.writeHistory(title, description) #: write history
@@ -98,12 +109,11 @@ class listNotifier():
             try:
                 line = hf.readlines()[-1][:end]
                 if fileName == self.historyFileName and self.lineChar*end == line: return(None)
-            except: return(None)
-        return(line)
+            except: return None
+        return line
 
 if __name__ == '__main__': #: main function
     try: listFileName = sys.argv[1] # list file name
     except: listFileName = input('Enter list filename: ')
     x = listNotifier(listFileName) #: create object
     x.runner() #: run program
-
