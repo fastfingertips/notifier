@@ -7,13 +7,12 @@ import pathlib
 from datetime import datetime
 
 while True:
-    try: from win10toast import ToastNotifier; break
+    try: from win11toast import toast; break
     except ImportError as ie: # if the import fails
         try: os.system('pip install pipreqs && pipreqs --encoding utf-8 --force && pip install -r requirements.txt')
         except Exception as e: print(F'Import Error: {ie}, Exception: {e}'); exit()
 
 class listNotifier():
-    notifier = ToastNotifier() # create an object to ToastNotifier class
     notifierDuration = 7 # 7 sec
     newChoiceTime = 60*5 # + notifierDuration
     historyFileName = 'history.txt' #: history file name
@@ -67,9 +66,15 @@ class listNotifier():
         description = content[sepIndex+1:].strip() #: get description
         return title, description #: return title and description
 
-    def runNotifier(self, title, description): 
-        self.notifier.show_toast(title, description, duration=self.notifierDuration) #: show toast
-        self.notifier.show_toast(title, description, duration=self.notifierDuration) #: show toast
+    def runNotifier(self, title, description):
+        # https://pypi.org/project/win11toast/
+        toast(
+            title,
+            description,
+            #selection=['Apple', 'Banana', 'Grape'], button='Submit',
+            #on_click='https://www.python.org'
+            )
+        # self.notifier.show_toast(title, description, duration=self.notifierDuration) # win10toast
 
     def terminalPrinter(self, title, description):
         print(f'{time.strftime("%X")} | {title}: {description}') #: print on terminal
@@ -90,7 +95,7 @@ class listNotifier():
             self.terminalPrinter(title, description) #: print on terminal
             self.writeHistory(title, description) #: write history
             self.runNotifier(title, description) #: show toast
-            time.sleep(self.newChoiceTime) #: wait for new choice
+            time.sleep(self.newChoiceTime) #: wait for new choice   
 
     def writeHistory(self, title, description):
         mode = 'a' if os.path.exists(self.historyFileName) else 'w' #: check if file exists
