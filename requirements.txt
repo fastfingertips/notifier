@@ -1,1 +1,1 @@
-win10toast==0.9
+win11toast==0.32
