@@ -1,4 +1,4 @@
-import os
+from . import os
 
 while True:
     try:
