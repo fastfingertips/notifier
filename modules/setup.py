@@ -18,4 +18,4 @@ while True:
             exit()
 
 # Defining the list of modules to be exported
-__all__ = ['os', 'toast']
+__all__ = ['toast']
