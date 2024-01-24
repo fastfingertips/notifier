@@ -39,7 +39,8 @@ class ListNotifier():
                 case '.txt', '.csv':
                     with open(self.fileName, 'r', encoding='utf_8') as f:
                         contents = f.readlines()
-                case _: print('File extension not supported')
+                case _:
+                    print('File extension not supported')
 
             if len(contents):
                 print(F'File read successfully! ({len(contents)} contents)')
@@ -79,7 +80,8 @@ class ListNotifier():
 
     def passContent(self, contents): #: remove content with #
         for content in contents: #: iterate contents
-            if content[0] == self.passChar: contents.remove(content) # remove content with #
+            if content[0] == self.passChar:
+                contents.remove(content) # remove content with #
         return contents #: return contents
 
     def runner(self):
@@ -111,8 +113,10 @@ class ListNotifier():
         with open(fileName, 'r') as hf:
             try:
                 line = hf.readlines()[-1][:end]
-                if fileName == self.historyFileName and self.lineChar*end == line: return(None)
-            except: return None
+                if fileName == self.historyFileName and self.lineChar*end == line:
+                    return(None)
+            except:
+                return None
         return line
 
 if __name__ == '__main__':
