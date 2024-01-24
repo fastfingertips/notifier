@@ -53,9 +53,6 @@ class ListNotifier():
             print(f'FileNotFoundError: {e}')
             exit()
 
-    def randomChoice(self, contents):
-        return random.choice(contents) #: random choice from list
-
     def findSeperatorIndex(self, content):
         print('Returned: ', content.index(self.sepChar))
         return content.index(self.sepChar) #: find seperator index
@@ -89,7 +86,7 @@ class ListNotifier():
         contents = self.readFile(extension) #: read file
         contents = self.passContent(contents) #: remove content with #
         while True: #: infinite loop
-            content = self.randomChoice(contents) #: random choice from list
+            content = random.choice(contents) #: random choice from list
             seperatorIndex = self.findSeperatorIndex(content) #: find seperator index
             title, description = self.editContent(content, seperatorIndex) #: edit content
             self.terminalPrinter(title, description) #: print on terminal
