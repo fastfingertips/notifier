@@ -1,16 +1,14 @@
-import os
-import sys
-import json
-import time
-import random
-import pathlib
-from datetime import datetime
+from modules import (
+  toast,
+  os,
+)
 
-while True:
-    try: from win11toast import toast; break
-    except ImportError as ie: # if the import fails
-        try: os.system('pip install pipreqs && pipreqs --encoding utf-8 --force && pip install -r requirements.txt')
-        except Exception as e: print(F'Import Error: {ie}, Exception: {e}'); exit()
+from datetime import datetime
+import pathlib
+import random
+import time
+import json
+import sys
 
 class listNotifier():
     notifierDuration = 7 # 7 sec
