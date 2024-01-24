@@ -10,7 +10,7 @@ import time
 import json
 import sys
 
-class listNotifier():
+class ListNotifier():
     notifierDuration = 7 # 7 sec
     newChoiceTime = 60*5 # + notifierDuration
     historyFileName = 'history.txt' #: history file name
@@ -115,8 +115,8 @@ class listNotifier():
             except: return None
         return line
 
-if __name__ == '__main__': #: main function
-    try: listFileName = sys.argv[1] # list file name
+if __name__ == '__main__':
+    try: listFileName = sys.argv[1]
     except: listFileName = input('Enter list filename: ')
-    x = listNotifier(listFileName) #: create object
-    x.runner() #: run program
+    notifier = ListNotifier(listFileName)
+    notifier.runner()
