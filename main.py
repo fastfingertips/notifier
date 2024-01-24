@@ -101,7 +101,7 @@ class ListNotifier():
         mode = 'a' if os.path.exists(self.historyFileName) else 'w' #: check if file exists
         with open(self.historyFileName, mode) as hf: # append mode
             lastContent = self.getLastContent(self.historyFileName, 10) #: get last content date
-            if lastContent != None and lastContent != datetime.now().strftime("%d/%m/%Y"):
+            if lastContent is not None and lastContent != datetime.now().strftime("%d/%m/%Y"):
                 newDayMsg = f'{self.lineChar*10} {self.lineChar*8} | {self.lineChar*19}'
                 print(newDayMsg[11:])
                 hf.write(newDayMsg+'\n') #: write history
@@ -115,7 +115,7 @@ class ListNotifier():
                 line = hf.readlines()[-1][:end]
                 if fileName == self.historyFileName and self.lineChar*end == line:
                     return(None)
-            except:
+            except IndexError:
                 return None
         return line
 
