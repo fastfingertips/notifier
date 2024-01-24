@@ -116,7 +116,13 @@ class ListNotifier():
         return line
 
 if __name__ == '__main__':
-    try: listFileName = sys.argv[1]
-    except: listFileName = input('Enter list filename: ')
-    notifier = ListNotifier(listFileName)
+    try:
+        user_input = sys.argv[1]
+    except IndexError:
+        user_input = input('Enter list: ')
+    except Exception as e:
+        print(f'Exception: {e}')
+        exit()
+
+    notifier = ListNotifier(user_input)
     notifier.runner()
